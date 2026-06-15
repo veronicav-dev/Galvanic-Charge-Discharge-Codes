@@ -1,0 +1,39 @@
+import pandas as pd
+import matplotlib.pyplot as mpl
+import datetime as dt
+import glob
+import os
+
+file_pattern = ''
+    
+fig, ax = mpl.subplots(figsize=(20,20))
+
+for file_path in glob.glob(file_pattern):  
+    
+    df=pd.read_csv(file_path)
+   
+    start = (df['Step Type'] == 'CC DChg').idxmax()
+    
+    print(start)
+    
+    # Convert column to timedelta
+    df['duration'] = pd.to_timedelta(df['Total Time'])
+    
+    # Create new column in minutes
+    df['Hours'] = df['duration'].dt.total_seconds() / 3600
+    
+    label_name = os.path.basename(file_path)
+    
+    df.plot(x='Hours', y='Voltage(V)', ax=ax, label=label_name)
+ 
+    
+  
+    
+
+ax.set_title("Galvanic Charge Discharge Curve")
+ax.set_xlabel("Hours")
+ax.set_ylabel("Y-Axis Label")
+ax.set_ylim(-0.1,0.1)
+ax.set_xlim(0,300)
+mpl.legend()
+mpl.show()
